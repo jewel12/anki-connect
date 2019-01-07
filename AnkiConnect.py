@@ -527,6 +527,15 @@ class AnkiConnect:
     def sync(self):
         self.window().onSync()
 
+    @api()
+    def todayStats(self):
+        cards, thetime = self.collection().db.first("""
+select count(), sum(time)/1000
+from revlog where id > ? """, (self.collection().sched.dayCutoff-86400)*1000)
+        if cards is None:
+            return {"cards": 0, "time": 0}
+        else:
+            return {"cards": cards, "time": thetime}
 
     @api()
     def multi(self, actions):
